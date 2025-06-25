@@ -39,6 +39,7 @@ Reply ONLY with a JSON object in this format (no other text):
 
     const result = await genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
       .generateContent(prompt)
+
     let rawText = result.response.text().trim()
 
     // 🟢 Strip extra text before/after JSON
@@ -70,6 +71,12 @@ Reply ONLY with a JSON object in this format (no other text):
   }
 })
 
+// 🟢 NEW home page route
+app.get('/', (req, res) => {
+  res.status(200).send('Welcome to MetricLayer Backend!')
+})
+
+// 🟢 PORT setup
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT} 🎯`)
