@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Analyze My Email</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    padding: 2rem;
+  }
+  h1 {
+    color: #333;
+  }
+  .container {
+    max-width: 600px;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  textarea {
+    width: 100%;
+    height: 120px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
+  button {
+    padding: 0.7rem 1.5rem;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-size: 1rem;
+  }
+  button:hover {
+    background: #218838;
+  }
+  .result {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  .label {
+    font-weight: bold;
+    margin-right: 0.5rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Analyze My Email</h1>
+  <textarea id="emailContent" placeholder="Type your email text here..."></textarea>
+  <button onclick="analyzeEmail()">Analyze</button>
+
+  <div id="result" class="result" style="display:none;"></div>
+</div>
+
+<script>
+  async function analyzeEmail() {
+    const emailContent = document.getElementById('emailContent').value;
+    const responseDiv = document.getElementById('result');
+
+    responseDiv.style.display = 'none';
+    responseDiv.innerHTML = '';
+
+    try {
+      const res = await fetch('http://localhost:3000/analyzeEmail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email_content: emailContent })
+      });
+
+      if (!res.ok) throw new Error('Server Error');
+
+      const json = await res.json();
+      const data = json.data[0]; // First record
+
+      responseDiv.innerHTML = `
+        <p><span class="label">Sentiment:</span> ${data.sentiment}</p>
+        <p><span class="label">Summary:</span> ${data.summary}</p>
+        <p><span class="label">Is repeated issue?:</span> ${data.is_repeated_issue ? 'Yes' : 'No'}</p>
+      `;
+      responseDiv.style.display = 'block';
+    } catch (error) {
+      responseDiv.innerHTML = '<p style="color:red;">Error: ' + error.message + '</p>';
+      responseDiv.style.display = 'block';
+    }
+  }
+</script>
+
+</body>
+</html>
